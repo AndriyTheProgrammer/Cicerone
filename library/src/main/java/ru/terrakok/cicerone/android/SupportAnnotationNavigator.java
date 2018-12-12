@@ -78,7 +78,7 @@ public class SupportAnnotationNavigator {
 
     private Map<String, Class<? extends Fragment>> getFragmentScreens(Class screenClass) {
         Map<String, Class<? extends Fragment>> fragments = new HashMap<>();
-        for (Field field : findFieldsWithAnnotation(screenClass, RelatedFragment.class)){
+        for (Field field : findFieldsWithAnnotation(screenClass, RelatedSupportFragment.class)){
             try {
                 fragments.put((String) field.get(screenClass), field.getAnnotation(RelatedSupportFragment.class).fragment());
             } catch (IllegalAccessException e) {

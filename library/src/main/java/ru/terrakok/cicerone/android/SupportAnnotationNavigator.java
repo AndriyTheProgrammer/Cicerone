@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ru.terrakok.cicerone.Navigator;
+import ru.terrakok.cicerone.android.app.ActivityOptions;
 import ru.terrakok.cicerone.annotations.RelatedActivity;
 import ru.terrakok.cicerone.annotations.RelatedFragment;
 import ru.terrakok.cicerone.annotations.RelatedSupportFragment;
@@ -51,6 +52,17 @@ public class SupportAnnotationNavigator {
                 if (!activities.containsKey(screenKey)) return null;
                 Intent intent = new Intent(activity, activities.get(screenKey));
                 if (data != null) intent.putExtras((Bundle) data);
+
+
+                int animEnter = defaultAnimId, animExit = defaultAnimId, animPopEnter = defaultAnimId, animPopExit = defaultAnimId;
+                    if (data != null){
+                        Bundle bundle = (Bundle) data;
+                        animEnter = bundle.getInt(ANIM_ENTER, 0);
+                        animExit = bundle.getInt(ANIM_EXIT, 0);
+                    }
+
+                activity.overridePendingTransition(animEnter, animExit);
+
                 return intent;
             }
 
@@ -71,6 +83,8 @@ public class SupportAnnotationNavigator {
                 return fragment;
 
             }
+
+
 
             @Override
             protected void setupFragmentTransactionAnimation(Command command, Fragment currentFragment, Fragment nextFragment, FragmentTransaction fragmentTransaction) {

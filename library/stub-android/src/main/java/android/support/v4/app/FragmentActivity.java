@@ -11,4 +11,8 @@ public class FragmentActivity extends Activity {
     public FragmentManager getSupportFragmentManager() {
         throw new RuntimeException("Stub!");
     }
+
+    public void overridePendingTransition(int enterAnim, int exitAnim) {
+        throw new RuntimeException("Stub!");
+    }
 }

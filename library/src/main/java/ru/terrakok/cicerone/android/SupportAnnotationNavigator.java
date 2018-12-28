@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -17,6 +18,9 @@ import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.annotations.RelatedActivity;
 import ru.terrakok.cicerone.annotations.RelatedFragment;
 import ru.terrakok.cicerone.annotations.RelatedSupportFragment;
+import ru.terrakok.cicerone.commands.Command;
+import ru.terrakok.cicerone.commands.Forward;
+import ru.terrakok.cicerone.commands.Replace;
 
 /**
  * Created by andriybiskup on 8/30/17.
@@ -26,6 +30,13 @@ public class SupportAnnotationNavigator {
 
     private Navigator navigator;
     private Class screensClass;
+
+    public static final String ANIM_ENTER = "ANIM_ENTER";
+    public static final String ANIM_EXIT = "ANIM_EXIT";
+    public static final String ANIM_POP_ENTER = "ANIM_POP_ENTER";
+    public static final String ANIM_POP_EXIT = "ANIM_POP_EXIT";
+
+    private int defaultAnimId = 0;
 
     public SupportAnnotationNavigator(FragmentActivity activity, int containerViewId, Class screensClass) {
         this.screensClass = screensClass;
@@ -60,6 +71,33 @@ public class SupportAnnotationNavigator {
                 return fragment;
 
             }
+
+            @Override
+            protected void setupFragmentTransactionAnimation(Command command, Fragment currentFragment, Fragment nextFragment, FragmentTransaction fragmentTransaction) {
+                super.setupFragmentTransactionAnimation(command, currentFragment, nextFragment, fragmentTransaction);
+                int animEnter = defaultAnimId, animExit = defaultAnimId, animPopEnter = defaultAnimId, animPopExit = defaultAnimId;
+                if (command instanceof Forward){
+                    Forward forwardCommand = (Forward) command;
+                    if (forwardCommand.getTransitionData() instanceof Bundle){
+                        Bundle bundle = (Bundle) forwardCommand.getTransitionData();
+                        animEnter = bundle.getInt(ANIM_ENTER, 0);
+                        animExit = bundle.getInt(ANIM_EXIT, 0);
+                        animPopEnter = bundle.getInt(ANIM_POP_ENTER, 0);
+                        animPopExit = bundle.getInt(ANIM_POP_EXIT, 0);
+                    }
+                }
+                if (command instanceof Replace){
+                    Replace forwardCommand = (Replace) command;
+                    if (forwardCommand.getTransitionData() instanceof Bundle){
+                        Bundle bundle = (Bundle) forwardCommand.getTransitionData();
+                        animEnter = bundle.getInt(ANIM_ENTER, 0);
+                        animExit = bundle.getInt(ANIM_EXIT, 0);
+                        animPopEnter = bundle.getInt(ANIM_POP_ENTER, 0);
+                        animPopExit = bundle.getInt(ANIM_POP_EXIT, 0);
+                    }
+                }
+                fragmentTransaction.setCustomAnimations(animEnter, animExit, animPopEnter, animPopExit);
+            }
         };
     }
 
@@ -75,6 +113,8 @@ public class SupportAnnotationNavigator {
         }
         return activities;
     }
+
+
 
     private Map<String, Class<? extends Fragment>> getFragmentScreens(Class screenClass) {
         Map<String, Class<? extends Fragment>> fragments = new HashMap<>();
@@ -106,4 +146,5 @@ public class SupportAnnotationNavigator {
     public Navigator getNavigator() {
         return navigator;
     }
+
 }

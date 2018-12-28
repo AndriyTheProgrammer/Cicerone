@@ -17,4 +17,9 @@ public class FragmentTransaction {
     public int commit() {
         throw new RuntimeException("Stub!");
     }
+
+    public FragmentTransaction setCustomAnimations(int var1, int var2, int var3, int var4){
+        throw new RuntimeException("Stub!");
+    }
+
 }
